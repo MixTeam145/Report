@@ -22,10 +22,15 @@
 \usepackage{tikz}
 \usepackage{ragged2e}
 
+\newcounter{saveenumi}
+\newcommand{\seti}{\setcounter{saveenumi}{\value{enumi}}}
+\newcommand{\conti}{\setcounter{enumi}{\value{saveenumi}}}
+
+\resetcounteronoverlays{saveenumi}
 
 %\usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows}
-
+\tikzstyle{arrow} = [thick,->,>=stealth]
 
 \setbeamercolor{bluetext_color}{fg=blue}
 \newcommand{\bluetext}[1]{{\usebeamercolor[fg]{bluetext_color}#1}}
@@ -36,24 +41,21 @@
 
 \title[Теплицев вариант анализа сингулярного спектра]{Теплицев вариант анализа сингулярного спектра}
 
-\author{Потешкин Егор Павлович, гр.20.Б04-мм}
+\author[Потешкин\,Е.\,П., Голяндина\,Н.\,Э.]{\underline{Потешкин Егор Павлович}, Голяндина Нина Эдуардовна}
 
 \institute[Санкт-Петербургский Государственный Университет]{%
 	\small
 	Санкт-Петербургский государственный университет\\
-	Прикладная математика и информатика\\
+	Математико-механический факультет\\
 	Вычислительная стохастика и статистические модели}
 
-\date[Зачет]{Санкт-Петербург, 2023}
+\date[Зачет]{Наука СПбГУ-2023
+	
+21 ноября 2023, Санкт-Петербург}
 
 \subject{Talks}	
 
 
-
-\tikzstyle{startstop} = [rectangle, rounded corners, a
-draw=black]
-
-\tikzstyle{arrow} = [thick,->,>=stealth]
 \begin{document}
 	\begin{frame}[plain]
 		\titlepage
@@ -113,7 +115,7 @@ draw=black]
 	\end{figure}
 \end{frame}
 \begin{frame}{MSSA: алгоритм}
-	MSSA "--- общение SSA на многомерный случай, когда $\tX$ "--- набор из $D$ временных рядов (каналов). Также этот метод дает преимущество по сравнению с SSA, если сигналы имеют в большой степени одинаковую структуру. \medskip
+	MSSA "--- обобщение SSA на многомерный случай, когда $\tX$ "--- набор из $D$ временных рядов (каналов). Также этот метод дает преимущество по сравнению с SSA, если сигналы имеют в большой степени одинаковую структуру. \medskip
 	
 	Пусть $\tX=\{\tX^{(d)}\}_{d=1}^D$ "--- D-канальный временной ряд с длинами $N_1,\ldots,N_D$. Тогда требуется определить только шаг построения траекторной матрицы:\medskip
 	
@@ -148,7 +150,7 @@ draw=black]
 	Существует 2 метода Toeplitz MSSA:\medskip
 	\begin{enumerate}
 		\item Метод Sum.\medskip
-		\item Метод Block.\medskip
+		\item Метод Block~[Plaut and Vautard, 1994]\medskip
 	\end{enumerate}
 	
 \end{frame}
@@ -157,9 +159,9 @@ draw=black]
 	
 	Определим матрицу $\bfT_{l,k}^{L}$ c элементами
 	\begin{equation*}\label{eq:block_elements}
-	\left\{\bfT^L_{l,k}\right\}_{ij}=\frac{1}{\widetilde N_{i,j}}\sum_{n=\max(1,1+i-j)}^{\min(N,N+i-j)} x^{(l)}_nx^{(k)}_{n+j-i},\ 1\leqslant i,j\leqslant L,
+	\left(\bfT^L_{l,k}\right)_{ij}=\frac{1}{N-|i-j|}\sum_{n=1}^{N-|i-j|} x^{(l)}_nx^{(k)}_{n+|i-j|},\ 1\leqslant i,j\leqslant L,
 	\end{equation*}
-	где $\widetilde N_{i,j}=\min(N,N+i-j)-\max(1,1+i-j)+1$.
+	которая является оценкой ковариационной матрицы $l$ и $k$-го каналов.
 \end{frame}
 \begin{frame}{Тёплицев MSSA: метод Sum}
 	\begin{enumerate}
@@ -202,7 +204,7 @@ draw=black]
 		\]
 		\item Полиномы первой степени (нестационарные ряды):
 		\[
-		s_n^{(1)}=6n,\quad s_n^{(2)}=4n,\quad n=1,\ldots,N.
+		s_n^{(1)}=1.2n,\quad s_n^{(2)}=0.8n,\quad n=1,\ldots,N.
 		\]
 	\end{enumerate}
 \end{frame}
@@ -244,15 +246,15 @@ draw=black]
 		\begin{tabular}{cccccc}\hline
 			Случай 3 & $L=12$ & $L=24$ & $L=36$ & $L=48$ & $L=60$\\
 			\hline
-			SSA & $3.34$ & $2.02$ & $\mathbf{1.87}$ & $2.02$ & $3.34$ \\
+			SSA & $3.65$ & $2.08$ & $\mathbf{1.96}$ & $2.08$ & $3.65$ \\
 			\hline
-			Toeplitz SSA & $\mathbf{5.08}$ & $19.3$ & $63.63$ & $169.91$ & $383.92$  \\
+			Toeplitz SSA & $3.33$ & $\mathbf{2.43}$ & $3.74$ & $7.84$ & $16.29$  \\
 			\hline
-			MSSA & $3.3$ & $1.9$ & $1.59$ & $\mathbf{1.52}$ & $2.09$\\
+			MSSA & $3.42$ & $1.94$ & $1.63$ & $\mathbf{1.57}$ & $2.27$\\
 			\hline
-			Sum & $\mathbf{4.58}$  & $14.48$ & $46.39$ & $123.06$ & $277.61$ \\
+			Sum & $3.32$  & $\mathbf{2.24}$ & $3.04$ & $5.91$ & $11.95$ \\
 			\hline
-			Block & $278.23$ & $123.47$  & $46.38$ & $14.06$ & $\mathbf{3.25}$\\
+			Block & $12.55$ & $6.18$  & $2.97$ & $\mathbf{1.78}$ & $1.97$\\
 			\hline
 		\end{tabular}}
 		\label{tab:mse}
@@ -261,9 +263,16 @@ draw=black]
 \begin{frame}{Выводы}
 	\begin{enumerate}
 		\item Sum и Block версии Toeplitz MSSA для стационарного ряда точнее выделяют сигнал, чем Basic MSSA. Если в сигналах разных каналов присутствует одна и та же частота, то Block чуть лучше Sum. Но если частоты разные, то Block существенно хуже Sum.\medskip
-		\item В случае нестационарных рядов (например, в которых присутствует тренд) оба метода показывают плохие результаты.\medskip
+		\item Рекомендуется использовать длину окна $L\gg(N+1)/2$ для метода Sum и $L\approx (N+1)/2$ для метода Block.\medskip
+		\item Если сравнивать по трудоемкости, для оптимальной длины окна метод Sum численно эффективнее Block. Также он позволяет рассматривать многоканальные временные ряды с разными длинами, в отличие от Block.
+		\seti
+	\end{enumerate}
+\end{frame}
+\begin{frame}{Выводы}
+	\begin{enumerate}
+		\conti
+		\item В случае нестационарных рядов (например, в которых присутствует тренд) оба метода показывают результаты хуже, чем Basic MSSA.\medskip
 		\item Применять Block и Sum Toeplitz MSSA рекомендуется к временным рядам, заранее выделив из них тренд.\medskip
-		\item Рекомендуется использовать длину окна $L\gg(N+1)/2$ для метода Sum и $L\approx (N+1)/2$ для метода Block.
 	\end{enumerate}
 \end{frame}
 \end{document}
