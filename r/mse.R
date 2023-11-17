@@ -101,10 +101,10 @@ mres.toeplBlock <- replicate(R, toeplBlock.errors(Ls))
 rowMeans(mres.toeplBlock)
 
 
-signal1 <- 0.6 * (1:N)
-signal2 <- 0.4 * (1:N)
+signal1 <- 1.2 * (1:N)
+signal2 <- 0.8 * (1:N)
 signal <- cbind(signal1, signal2)
-n <- 1
+n <- 2
 
 mres.ssa <- replicate(R, ssa.errors(Ls))
 rowMeans(mres.ssa)
