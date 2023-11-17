@@ -1,0 +1,271 @@
+\documentclass[ucs, notheorems, handout]{beamer}
+\usetheme[numbers,totalnumbers,compress, nologo]{Statmod}
+\usefonttheme[onlymath]{serif}
+\setbeamertemplate{navigation symbols}{}
+
+\usepackage{graphicx,subcaption,ragged2e}
+
+\include{letters_series_mathbb.tex}
+
+\mode<handout> {
+	\usepackage{pgfpages}
+	%\setbeameroption{show notes}
+	%\pgfpagesuselayout{2 on 1}[a4paper, border shrink=5mm]
+	\setbeamercolor{note page}{bg=white}
+	\setbeamercolor{note title}{bg=gray!10}
+	\setbeamercolor{note date}{fg=gray!10}
+}
+
+\usepackage[utf8x]{inputenc}
+\usepackage[T2A]{fontenc}
+\usepackage[russian]{babel}
+\usepackage{tikz}
+\usepackage{ragged2e}
+
+
+%\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows}
+
+
+\setbeamercolor{bluetext_color}{fg=blue}
+\newcommand{\bluetext}[1]{{\usebeamercolor[fg]{bluetext_color}#1}}
+
+\newcommand{\bfxi}{\boldsymbol{\xi}}
+\newtheorem{definition}{Определение}
+\newtheorem{remark}{Замечание}
+
+\title[Теплицев вариант анализа сингулярного спектра]{Теплицев вариант анализа сингулярного спектра}
+
+\author{Потешкин Егор Павлович, гр.20.Б04-мм}
+
+\institute[Санкт-Петербургский Государственный Университет]{%
+	\small
+	Санкт-Петербургский государственный университет\\
+	Прикладная математика и информатика\\
+	Вычислительная стохастика и статистические модели}
+
+\date[Зачет]{Санкт-Петербург, 2023}
+
+\subject{Talks}	
+
+
+
+\tikzstyle{startstop} = [rectangle, rounded corners, a
+draw=black]
+
+\tikzstyle{arrow} = [thick,->,>=stealth]
+\begin{document}
+	\begin{frame}[plain]
+		\titlepage
+		\note{Научный руководитель  к.ф.-м.н., доцент Голяндина\,Н.\,Э.,\\
+			кафедра статистического моделирования}
+	\end{frame}
+\begin{frame}{Постановка задачи}
+	Временной ряд $\tX=(x_1,\ldots,x_N)$ "--- последовательность наблюдений, упорядоченных по времени.\medskip
+	
+	\bluetext{Примеры}: биржевой курс, замеры температуры в течении нескольких лет.\medskip
+	
+	\bluetext{Дано}: временной ряд состоит из тренда, сезонности (неслучайные состовляющие) и шума (случайная состовляющая): $\tX=\tT + \tS + \tR$.\medskip
+	
+	\bluetext{Проблема}: Как выделить неслучайные компоненты?\medskip
+	
+	\bluetext{Решение}: метод SSA.\medskip
+	
+	\alert{Задача}: Выделить сигнал как можно точнее. 
+\end{frame}
+\begin{frame}{Обозначения: оператор вложения и ганкелизации}
+	$\tX=(x_1,\ldots,x_N)$. Зафиксируем \emph{длину окна} $L$, $1<L<N$.\medskip
+	
+	\emph{Оператор вложения} $\cT$:
+	\begin{equation*}
+		\cT(\tX)=\bfX=\begin{pmatrix}
+			x_1 & x_2 & \cdots & x_K \\
+			x_2 & x_3 & \cdots & x_{K+1} \\
+			\vdots & \vdots & \ddots & \vdots \\
+			x_L & x_{L+1} & \cdots & x_N 
+		\end{pmatrix}
+	\end{equation*}
+	"--- \emph{траекторная матрица}.\medskip
+	
+	\emph{Оператор ганкелизации} $\cH$ "--- усреднение матрицы по побочным диагоналям.
+\end{frame}
+\begin{frame}{SSA: алгоритм}
+		\bluetext{Входные данные}: временной ряд $\tX=(x_1,\ldots,x_N)$.\\
+	
+	\bluetext{Параметр}: длина окна $L$.\\
+	
+	\bluetext{Результат}: $m$ восстановленных временных рядов.\\
+	\begin{figure}
+		\scalebox{0.54}{
+	\begin{tikzpicture}[node distance=2cm]
+		\node[draw, align=center, minimum width=5.5cm, minimum height=2.5cm](1){\textbf{Входные данные}: $\tX$ "--- \\ временной ряд};
+		\node[draw, align=center, minimum width=5.5cm, minimum height=2.5cm, below of=1, yshift=-2cm](2){Траекторная матрица\\ $\bf{X}=\cT(\tX)$};
+		\node[draw, align=center, minimum width=5.5cm, minimum height=2.5cm, right of=2, xshift=7cm](3){Сумма матриц\\ единичного ранга\\ $\bfX=\sum\limits_{j=1}^d\bfX_j$};
+		\node[draw, align=center, minimum width=5.5cm, minimum height=2.5cm, below of=3, yshift=-2cm](4){Сгруппированные\\ матрицы \\ $\bfX=\bfX_{I_1}+\ldots+\bfX_{I_m}$\\$\bfX_I=\sum\limits_{i\in I}\bfX_i$};
+		\node[draw, align=center, minimum width=5.5cm, minimum height=2.5cm, below of=2, yshift=-2cm](5){\textbf{Результат}: SSA разложение\\$\tX=\widetilde\tX_1+\ldots+\widetilde\tX_m$\\$\widetilde\tX_{I_k}=\cT^{-1}\circ\cH(\bfX_{I_k})$};
+		
+		\draw[arrow](1)--node[anchor=west]{1. Вложение}(2);
+		\draw[arrow](2)--node[anchor=south]{2. Разложение}(3);
+		\draw[arrow](3)--node[anchor=west]{3. Группировка}(4);
+		\draw[arrow](4)--node[anchor=south]{4. Восстановление}(5);
+	\end{tikzpicture}}
+	\caption{Алгоритм SSA}
+	\end{figure}
+\end{frame}
+\begin{frame}{MSSA: алгоритм}
+	MSSA "--- общение SSA на многомерный случай, когда $\tX$ "--- набор из $D$ временных рядов (каналов). Также этот метод дает преимущество по сравнению с SSA, если сигналы имеют в большой степени одинаковую структуру. \medskip
+	
+	Пусть $\tX=\{\tX^{(d)}\}_{d=1}^D$ "--- D-канальный временной ряд с длинами $N_1,\ldots,N_D$. Тогда требуется определить только шаг построения траекторной матрицы:\medskip
+	
+	\begin{itemize}
+		\item \emph{Вложение}: составная траекторная матрица $L\times K$  $$\bf{X}=[\cT(\tX^{(1)}):\ldots:\cT(\tX^{(D)})]=[\bfX^{(1)}:\ldots:\bfX^{(D)}],$$ где $K=\sum_{i=1}^D K_i,$ $K_i=N_i-L+1$.
+		
+	\end{itemize}
+	%\begin{figure}
+	%\scalebox{0.65}{
+	%	\begin{tikzpicture}[node distance=2cm]
+	%		\node[draw, align=center, minimum width=5.5cm, minimum height=2.5cm](1){\textbf{Входные данные}: $\tX$ "---\\ D-канальный временной ряд};
+	%		\node[draw, align=center, minimum width=5.5cm, minimum height=2.5cm, below of=1, yshift=-2cm](2){Траекторная матрица \\ $\bf{X}=[\cT(\tX^{(1)}):\ldots:\cT(\tX^{(D)})]$};
+	%		\node[draw, align=center, minimum width=5.5cm, minimum height=2.5cm, right of=2, xshift=7cm](3){Сумма матриц\\ единичного ранга\\ $\bfX=\sum\limits_{j=1}^d\bfX_j$};
+	%		\node[draw, align=center, minimum width=5.5cm, minimum height=2.5cm, below of=3, yshift=-2cm](4){Сгруппированные\\ матрицы \\ $\bfX=\bfX_{I_1}+\ldots+\bfX_{I_m}$\\$\bfX_I=\sum\limits_{i\in I}\bfX_i$};
+	%		\node[draw, align=center, minimum width=5.5cm, minimum height=2.5cm, below of=2, yshift=-2cm](5){\textbf{Результат}: MSSA разложение\\$\tX=\widetilde\tX_1+\ldots+\widetilde\tX_m$\\$\widetilde\tX_{I_k}=\left\{\cT^{-1}\circ\cH\left(\bfX_{I_k}^{(d)}\right)\right\}_{d=1}^D$};
+			
+	%		\draw[arrow](1)--node[anchor=west]{1. Вложение}(2);
+	%		\draw[arrow](2)--node[anchor=south]{2. Разложение}(3);
+	%		\draw[arrow](3)--node[anchor=west]{3. Группировка}(4);
+	%		\draw[arrow](4)--node[anchor=south]{4. Восстановление}(5);
+	%\end{tikzpicture}}
+	%\caption{Алгоритм MSSA}
+	%\end{figure}
+\end{frame}
+\begin{frame}{Стационарный случай}
+
+	
+	Если $\tX$ "--- стационарный временной ряд, то можно улучшить базовый метод, используя вместо сингулярного тёплицево разложение матрицы $\bfX$, не изменяя при этом остальные этапы.\medskip
+	
+	Тёплицев вариант MSSA был специально разработан для анализа стационарных временных рядов, поскольку имеет преимущество перед стандартным MSSA. \medskip
+	
+	Существует 2 метода Toeplitz MSSA:\medskip
+	\begin{enumerate}
+		\item Метод Sum.\medskip
+		\item Метод Block.\medskip
+	\end{enumerate}
+	
+\end{frame}
+\begin{frame}{Тёплицев MSSA: обозначение}
+	Пусть $\tX$ "--- $D$-канальный временной ряд с одинаковыми длинами $N_d=N$ $\forall d=1,\ldots,D$. Зафиксируем $L$.\medskip
+	
+	Определим матрицу $\bfT_{l,k}^{L}$ c элементами
+	\begin{equation*}\label{eq:block_elements}
+	\left\{\bfT^L_{l,k}\right\}_{ij}=\frac{1}{\widetilde N_{i,j}}\sum_{n=\max(1,1+i-j)}^{\min(N,N+i-j)} x^{(l)}_nx^{(k)}_{n+j-i},\ 1\leqslant i,j\leqslant L,
+	\end{equation*}
+	где $\widetilde N_{i,j}=\min(N,N+i-j)-\max(1,1+i-j)+1$.
+\end{frame}
+\begin{frame}{Тёплицев MSSA: метод Sum}
+	\begin{enumerate}
+		\item Построить $\bfT_{\text{Sum}}=\sum_{i=1}^D \bfT^{L}_{i,i}$.\medskip
+		\item Найти ортонормированные собственные векторы $H_1,\ldots,H_L$ матрицы $\bfT_{\text{Sum}}$ и получить разложение
+		\begin{equation*}
+			\mathbf{X}=\sum_{i=1}^L H_i Z_i^\mathrm{T},
+		\end{equation*}
+		где $Z_i=\mathbf{X^T}H_i$.\medskip
+	\end{enumerate}
+	Трудоемкость построения матрицы: $\mathcal{O}(DN^2)$.
+\end{frame}
+\begin{frame}{Тёплицев MSSA: метод Block}
+	\begin{enumerate}
+		\item Построить $\bfT_{\text{Block}}=\begin{pmatrix}
+			\bfT^K_{1,1} & \bfT^K_{1,2} & \cdots & \bfT^K_{1,D} \\
+			\bfT^K_{2,1} & \bfT^K_{2,2} & \cdots & \bfT^K_{2,D} \\
+			\vdots  & \vdots  & \ddots & \vdots  \\
+			\bfT^K_{D,1} & \bfT^K_{D,D} & \cdots & \bfT^K_{D,D}
+		\end{pmatrix}$, где $K = N - L + 1$.\medskip
+		\item Найти ортонормированные собственные векторы $Q_1,\ldots,Q_{DK}$ матрицы  $\bfT_{\text{Block}}$ и получить разложение
+		\begin{equation*}
+			\mathbf{X}=\sum_{i=1}^{DK} (\bfX Q_i) Q_i^\mathrm{T}=\sum_{i=1}^{DK} P_i Q_i^\mathrm{T}.   
+		\end{equation*}
+	\end{enumerate}
+	Трудоемкость построения матрицы: $\mathcal{O}(D^2N^2)$.
+\end{frame}
+\begin{frame}{Численное исследование}
+	\bluetext{Дано}: $(\tF^{(1)}, \tF^{(2)})=(\tS^{(1)},\tS^{(2)}) + (\tR^{(1)},\tR^{(2)})$, $N=71$.\medskip
+	
+	\bluetext{Задача}: проверить точность базового и модифицированных методов для разных значений параметра $L$. \medskip
+	
+	\bluetext{Рассмотрим 3 случая}:\medskip
+	\begin{enumerate}
+		\item Косинусы с одинаковыми периодами:
+		\[
+		s_n^{(1)}=30\cos(2\pi n/12),\quad s_n^{(2)}=20\cos(2\pi n/12),\quad n=1,\ldots, N.
+		\]
+		\item Косинусы с разными периодами:
+		\[
+		s_n^{(1)}=30\cos(2\pi n/12),\quad s_n^{(2)}=20\cos(2\pi n/8),\quad n=1,\ldots, N.
+		\]
+		\item Полиномы первой степени (нестационарные ряды):
+		\[
+		s_n^{(1)}=6n,\quad s_n^{(2)}=4n,\quad n=1,\ldots,N.
+		\]
+	\end{enumerate}
+\end{frame}
+\begin{frame}{Численное исследование. Результаты}
+		\begin{table}[h]
+		\centering
+		\caption{MSE восстановления сигнала.}
+		\scalebox{0.75}{
+		\begin{tabular}{cccccc}\hline
+			Случай 1 & $L=12$ & $L=24$ & $L=36$ & $L=48$ & $L=60$\\
+			\hline
+			SSA & $3.25$ & $\mathbf{2.01}$ & $\mathbf{2.00}$ & $\mathbf{2.01}$ & $3.25$\\
+			\hline
+			Toeplitz SSA & $3.2$ & $1.87$ & $1.63$ & $\mathbf{1.59}$ & $1.67$ \\
+			\hline
+			MSSA & $3.18$ & $1.83$ & $1.59$ & $\mathbf{1.47}$ & $2.00$\\
+			\hline
+			Sum &  $3.17$ & $1.75$ & $1.44$ & $\mathbf{1.32}$ & $\mathbf{1.33}$\\
+			\hline
+			Block & $1.39$ & $\mathbf{1.26}$ & $\mathbf{1.25}$ & $1.33$ & $1.97$\\
+			\hline
+		\end{tabular}}
+		\scalebox{0.75}{
+		\begin{tabular}{cccccc}\hline
+			Случай 2 & $L=12$ & $L=24$ & $L=36$ & $L=48$ & $L=60$\\
+			\hline
+			SSA & $3.25$ & $\mathbf{2.01}$ & $\mathbf{2.00}$ & $\mathbf{2.01}$ & $3.25$\\
+			\hline
+			Toeplitz SSA & $3.2$ & $1.87$ & $1.63$ & $\mathbf{1.59}$ & $1.67$ \\
+			\hline
+			MSSA & $6.91$ & $3.77$ & $3.07$ & $\mathbf{2.88}$ & $3.84$\\
+			\hline
+			Sum & $6.88$ & $3.65$ & $2.64$ & $2.37$ & $\mathbf{2.27}$\\
+			\hline
+			Block & $4.47$ & $3.67$ & $\mathbf{3.22}$ & $\mathbf{3.23}$ & $3.8$\\
+			\hline
+		\end{tabular}}
+		\scalebox{0.75}{
+		\begin{tabular}{cccccc}\hline
+			Случай 3 & $L=12$ & $L=24$ & $L=36$ & $L=48$ & $L=60$\\
+			\hline
+			SSA & $3.34$ & $2.02$ & $\mathbf{1.87}$ & $2.02$ & $3.34$ \\
+			\hline
+			Toeplitz SSA & $\mathbf{5.08}$ & $19.3$ & $63.63$ & $169.91$ & $383.92$  \\
+			\hline
+			MSSA & $3.3$ & $1.9$ & $1.59$ & $\mathbf{1.52}$ & $2.09$\\
+			\hline
+			Sum & $\mathbf{4.58}$  & $14.48$ & $46.39$ & $123.06$ & $277.61$ \\
+			\hline
+			Block & $278.23$ & $123.47$  & $46.38$ & $14.06$ & $\mathbf{3.25}$\\
+			\hline
+		\end{tabular}}
+		\label{tab:mse}
+	\end{table}
+\end{frame}
+\begin{frame}{Выводы}
+	\begin{enumerate}
+		\item Sum и Block версии Toeplitz MSSA для стационарного ряда точнее выделяют сигнал, чем Basic MSSA. Если в сигналах разных каналов присутствует одна и та же частота, то Block чуть лучше Sum. Но если частоты разные, то Block существенно хуже Sum.\medskip
+		\item В случае нестационарных рядов (например, в которых присутствует тренд) оба метода показывают плохие результаты.\medskip
+		\item Применять Block и Sum Toeplitz MSSA рекомендуется к временным рядам, заранее выделив из них тренд.\medskip
+		\item Рекомендуется использовать длину окна $L\gg(N+1)/2$ для метода Sum и $L\approx (N+1)/2$ для метода Block.
+	\end{enumerate}
+\end{frame}
+\end{document}
