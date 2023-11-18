@@ -65,9 +65,9 @@
 \begin{frame}{Постановка задачи}
 	Временной ряд $\tX=(x_1,\ldots,x_N)$ "--- последовательность наблюдений, упорядоченных по времени.\medskip
 	
-	\bluetext{Примеры}: биржевой курс, замеры температуры в течении нескольких лет.\medskip
+	\bluetext{Примеры}: Биржевой курс, замеры температуры в течении нескольких лет.\medskip
 	
-	\bluetext{Дано}: временной ряд состоит из тренда, сезонности (неслучайные состовляющие) и шума (случайная состовляющая): $\tX=\tT + \tS + \tR$.\medskip
+	\bluetext{Дано}: Временной ряд состоит из тренда, сезонности (неслучайные состовляющие) и шума (случайная состовляющая): $\tX=\tT + \tS + \tR$.\medskip
 	
 	\bluetext{Проблема}: Как выделить неслучайные компоненты?\medskip
 	
@@ -77,7 +77,7 @@
 
     \bluetext{Решение}: Для стационарных рядов использование теплицева варианта SSA. \medskip
     
-    \bluetext{Доп.мотивация}: Преимущество теплицева вариант в задача обнаружения сигнала методов Monte Carlo SSA.
+    \bluetext{Доп.мотивация}: Преимущество теплицева варианта в задача обнаружения сигнала методов Monte Carlo SSA.
 \end{frame}
 \begin{frame}{Обозначения: оператор вложения и ганкелизации}
 	$\tX=(x_1,\ldots,x_N)$. Зафиксируем \emph{длину окна} $L$, $1<L<N$.\medskip
@@ -158,7 +158,7 @@ Toeplitz SSA/MSSA --- теплицево разложение траекторн
 	
 	Два варианта метода Toeplitz MSSA:\medskip
 	\begin{enumerate}
-		\item Метод Block~[Plaut and Vautard, 1994]\medskip
+		\item Метод Block~[Plaut and Vautard, 1994].\medskip
 		\item Метод Sum --- предлагаем.\medskip
 	\end{enumerate}
 	
@@ -168,11 +168,24 @@ Toeplitz SSA/MSSA --- теплицево разложение траекторн
 	
 	Определим матрицу $\bfT_{l,k}^{(M)}\in \mathbb{R}^{M\times M}$ c элементами
 	\begin{equation*}\label{eq:block_elements}
-	\left(\bfT^{(M)}_{l,k}\right)_{ij}=\frac{1}{N-|i-j|}\sum_{n=1}^{N-|i-j|} x^{(l)}_nx^{(k)}_{n+|i-j|},\ 1\leqslant i,j\leqslant L,
+	\left(\bfT^{(M)}_{l,k}\right)_{ij}=\frac{1}{N-|i-j|}\sum_{n=1}^{N-|i-j|} x^{(l)}_nx^{(k)}_{n+|i-j|},\ 1\leqslant i,j\leqslant M,
 	\end{equation*}
 	которая является оценкой ковариационной матрицы $l$ и $k$-го каналов.
 \end{frame}
-
+\begin{frame}{Тёплицев MSSA: метод Block}
+	\begin{enumerate}
+		\item Построить $$\bfT_{\text{Block}}=\begin{pmatrix}
+			\bfT^{(K)}_{1,1} & \bfT^{(K)}_{1,2} & \cdots & \bfT^{(K)}_{1,D} \\
+			\bfT^{(K)}_{2,1} & \bfT^{(K)}_{2,2} & \cdots & \bfT^{(K)}_{2,D} \\
+			\vdots  & \vdots  & \ddots & \vdots  \\
+			\bfT^{(K)}_{D,1} & \bfT^{(K)}_{D,D} & \cdots & \bfT^{(K)}_{D,D}
+		\end{pmatrix} \in \mathbb{R}^{DK\times DK},$$ где $K = N - L + 1$.\medskip
+		\item Найти ортонормированные собственные векторы $Q_1,\ldots,Q_{DK}$ матрицы  $\bfT_{\text{Block}}$ и получить разложение
+		\begin{equation*}
+			\mathbf{X}=\sum_{i=1}^{DK} (\bfX Q_i) Q_i^\mathrm{T}=\sum_{i=1}^{DK} P_i Q_i^\mathrm{T}.
+		\end{equation*}
+	\end{enumerate}
+\end{frame}
 \begin{frame}{Тёплицев MSSA: метод Sum}
 	\begin{enumerate}
 		\item Построить $\bfT_{\text{Sum}}=\sum_{i=1}^D \bfT^{(L)}_{i,i}\in \mathbb{R}^{L\times L}$.\medskip
@@ -181,20 +194,6 @@ Toeplitz SSA/MSSA --- теплицево разложение траекторн
 			\mathbf{X}=\sum_{i=1}^L H_i Z_i^\mathrm{T},
 		\end{equation*}
 		где $Z_i=\mathbf{X^T}H_i$.
-	\end{enumerate}
-\end{frame}
-\begin{frame}{Тёплицев MSSA: метод Block}
-	\begin{enumerate}
-		\item Построить $\bfT_{\text{Block}}=\begin{pmatrix}
-			\bfT^{(K)}_{1,1} & \bfT^{(K)}_{1,2} & \cdots & \bfT^{(K)}_{1,D} \\
-			\bfT^{(K)}_{2,1} & \bfT^{(K)}_{2,2} & \cdots & \bfT^{(K)}_{2,D} \\
-			\vdots  & \vdots  & \ddots & \vdots  \\
-			\bfT^{(K)}_{D,1} & \bfT^{(K)}_{D,D} & \cdots & \bfT^{(K)}_{D,D}
-		\end{pmatrix} \in \mathbb{R}^{DK\times DK}$, где $K = N - L + 1$.\medskip
-		\item Найти ортонормированные собственные векторы $Q_1,\ldots,Q_{DK}$ матрицы  $\bfT_{\text{Block}}$ и получить разложение
-		\begin{equation*}
-			\mathbf{X}=\sum_{i=1}^{DK} (\bfX Q_i) Q_i^\mathrm{T}=\sum_{i=1}^{DK} P_i Q_i^\mathrm{T}.
-		\end{equation*}
 	\end{enumerate}
 \end{frame}
 \begin{frame}{Численное исследование}
