@@ -47,10 +47,10 @@
 	\small
 	Санкт-Петербургский государственный университет\\
 	Математико-механический факультет\\
-	Вычислительная стохастика и статистические модели}
+	Кафедра статистического моделирования}
 
-\date[Зачет]{Наука СПбГУ-2023
-	
+%\vspace*{1cm}
+\date[Зачет]{\\Наука СПбГУ-2023\\
 21 ноября 2023, Санкт-Петербург}
 
 \subject{Talks}	
@@ -71,9 +71,13 @@
 	
 	\bluetext{Проблема}: Как выделить неслучайные компоненты?\medskip
 	
-	\bluetext{Решение}: метод SSA.\medskip
+	\bluetext{Метод}: Singular spectrum analysis (SSA).\medskip
 	
-	\alert{Задача}: Выделить сигнал как можно точнее. 
+	\alert{Задача}: Выделить сигнал как можно точнее.\medskip
+
+    \bluetext{Решение}: Для стационарных рядов использование теплицева варианта SSA. \medskip
+    
+    \bluetext{Доп.мотивация}: Преимущество теплицева вариант в задача обнаружения сигнала методов Monte Carlo SSA.
 \end{frame}
 \begin{frame}{Обозначения: оператор вложения и ганкелизации}
 	$\tX=(x_1,\ldots,x_N)$. Зафиксируем \emph{длину окна} $L$, $1<L<N$.\medskip
@@ -84,7 +88,7 @@
 			x_1 & x_2 & \cdots & x_K \\
 			x_2 & x_3 & \cdots & x_{K+1} \\
 			\vdots & \vdots & \ddots & \vdots \\
-			x_L & x_{L+1} & \cdots & x_N 
+			x_L & x_{L+1} & \cdots & x_N
 		\end{pmatrix}
 	\end{equation*}
 	"--- \emph{траекторная матрица}.\medskip
@@ -120,7 +124,7 @@
 	Пусть $\tX=\{\tX^{(d)}\}_{d=1}^D$ "--- D-канальный временной ряд с длинами $N_1,\ldots,N_D$. Тогда требуется определить только шаг построения траекторной матрицы:\medskip
 	
 	\begin{itemize}
-		\item \emph{Вложение}: составная траекторная матрица $L\times K$  $$\bf{X}=[\cT(\tX^{(1)}):\ldots:\cT(\tX^{(D)})]=[\bfX^{(1)}:\ldots:\bfX^{(D)}],$$ где $K=\sum_{i=1}^D K_i,$ $K_i=N_i-L+1$.
+		\item \emph{Вложение}: составная траекторная матрица $L\times K$  $$\bfX=[\cT(\tX^{(1)}):\ldots:\cT(\tX^{(D)})]=[\bfX^{(1)}:\ldots:\bfX^{(D)}],$$ где $K=\sum_{i=1}^D K_i,$ $K_i=N_i-L+1$.
 		
 	\end{itemize}
 	%\begin{figure}
@@ -142,30 +146,36 @@
 \end{frame}
 \begin{frame}{Стационарный случай}
 
+Basic SSA/MSSA --- сингулярное разложение траекторной матрицы, универсальный метод.
+
+\medskip
+Toeplitz SSA/MSSA --- теплицево разложение траекторной матрицы, имеет преимущество для стационарных временных рядов. 	
 	
-	Если $\tX$ "--- стационарный временной ряд, то можно улучшить базовый метод, используя вместо сингулярного тёплицево разложение матрицы $\bfX$, не изменяя при этом остальные этапы.\medskip
+\medskip
+Остальные этапы кроме разложения не меняются.\medskip
 	
-	Тёплицев вариант MSSA был специально разработан для анализа стационарных временных рядов, поскольку имеет преимущество перед стандартным MSSA. \medskip
+%	Тёплицев вариант MSSA был специально разработан для анализа стационарных временных рядов, поскольку имеет преимущество перед стандартным MSSA. \medskip
 	
-	Существует 2 метода Toeplitz MSSA:\medskip
+	Два варианта метода Toeplitz MSSA:\medskip
 	\begin{enumerate}
-		\item Метод Sum.\medskip
 		\item Метод Block~[Plaut and Vautard, 1994]\medskip
+		\item Метод Sum --- предлагаем.\medskip
 	\end{enumerate}
 	
 \end{frame}
 \begin{frame}{Тёплицев MSSA: обозначение}
-	Пусть $\tX$ "--- $D$-канальный временной ряд с одинаковыми длинами $N_d=N$ $\forall d=1,\ldots,D$. Зафиксируем $L$.\medskip
+	Пусть $\tX$ "--- $D$-канальный временной ряд с одинаковыми длинами $N_d=N$ $\forall d=1,\ldots,D$. Зафиксируем $M$.\medskip
 	
-	Определим матрицу $\bfT_{l,k}^{L}$ c элементами
+	Определим матрицу $\bfT_{l,k}^{(M)}\in \mathbb{R}^{M\times M}$ c элементами
 	\begin{equation*}\label{eq:block_elements}
-	\left(\bfT^L_{l,k}\right)_{ij}=\frac{1}{N-|i-j|}\sum_{n=1}^{N-|i-j|} x^{(l)}_nx^{(k)}_{n+|i-j|},\ 1\leqslant i,j\leqslant L,
+	\left(\bfT^{(M)}_{l,k}\right)_{ij}=\frac{1}{N-|i-j|}\sum_{n=1}^{N-|i-j|} x^{(l)}_nx^{(k)}_{n+|i-j|},\ 1\leqslant i,j\leqslant L,
 	\end{equation*}
 	которая является оценкой ковариационной матрицы $l$ и $k$-го каналов.
 \end{frame}
+
 \begin{frame}{Тёплицев MSSA: метод Sum}
 	\begin{enumerate}
-		\item Построить $\bfT_{\text{Sum}}=\sum_{i=1}^D \bfT^{L}_{i,i}$.\medskip
+		\item Построить $\bfT_{\text{Sum}}=\sum_{i=1}^D \bfT^{(L)}_{i,i}\in \mathbb{R}^{L\times L}$.\medskip
 		\item Найти ортонормированные собственные векторы $H_1,\ldots,H_L$ матрицы $\bfT_{\text{Sum}}$ и получить разложение
 		\begin{equation*}
 			\mathbf{X}=\sum_{i=1}^L H_i Z_i^\mathrm{T},
@@ -176,14 +186,14 @@
 \begin{frame}{Тёплицев MSSA: метод Block}
 	\begin{enumerate}
 		\item Построить $\bfT_{\text{Block}}=\begin{pmatrix}
-			\bfT^K_{1,1} & \bfT^K_{1,2} & \cdots & \bfT^K_{1,D} \\
-			\bfT^K_{2,1} & \bfT^K_{2,2} & \cdots & \bfT^K_{2,D} \\
+			\bfT^{(K)}_{1,1} & \bfT^{(K)}_{1,2} & \cdots & \bfT^{(K)}_{1,D} \\
+			\bfT^{(K)}_{2,1} & \bfT^{(K)}_{2,2} & \cdots & \bfT^{(K)}_{2,D} \\
 			\vdots  & \vdots  & \ddots & \vdots  \\
-			\bfT^K_{D,1} & \bfT^K_{D,D} & \cdots & \bfT^K_{D,D}
-		\end{pmatrix}$, где $K = N - L + 1$.\medskip
+			\bfT^{(K)}_{D,1} & \bfT^{(K)}_{D,D} & \cdots & \bfT^{(K)}_{D,D}
+		\end{pmatrix} \in \mathbb{R}^{DK\times DK}$, где $K = N - L + 1$.\medskip
 		\item Найти ортонормированные собственные векторы $Q_1,\ldots,Q_{DK}$ матрицы  $\bfT_{\text{Block}}$ и получить разложение
 		\begin{equation*}
-			\mathbf{X}=\sum_{i=1}^{DK} (\bfX Q_i) Q_i^\mathrm{T}=\sum_{i=1}^{DK} P_i Q_i^\mathrm{T}.   
+			\mathbf{X}=\sum_{i=1}^{DK} (\bfX Q_i) Q_i^\mathrm{T}=\sum_{i=1}^{DK} P_i Q_i^\mathrm{T}.
 		\end{equation*}
 	\end{enumerate}
 \end{frame}
@@ -207,6 +217,8 @@
 		s_n^{(1)}=1.2n,\quad s_n^{(2)}=0.8n,\quad n=1,\ldots,N.
 		\]
 	\end{enumerate}
+
+Группировка в SSA: $I_1 = \{1,2\}$.
 \end{frame}
 \begin{frame}{Численное исследование. Результаты}
 		\begin{table}[h]
@@ -262,17 +274,17 @@
 \end{frame}
 \begin{frame}{Выводы}
 	\begin{enumerate}
-		\item Sum и Block версии Toeplitz MSSA для стационарного ряда точнее выделяют сигнал, чем Basic MSSA. Если в сигналах разных каналов присутствует одна и та же частота, то Block чуть лучше Sum. Но если частоты разные, то Block существенно хуже Sum.\medskip
+		\item Sum и Block версии Toeplitz MSSA для стационарного ряда точнее выделяют сигнал, чем Basic MSSA. Если в сигналах разных каналов присутствует одна и та же частота, то Block немного лучше Sum. Но если частоты разные, то Block существенно хуже Sum.\medskip
 		\item Рекомендуется использовать длину окна $L\gg(N+1)/2$ для метода Sum и $L\approx (N+1)/2$ для метода Block.\medskip
 		\item Если сравнивать по трудоемкости, для оптимальной длины окна метод Sum численно эффективнее Block. Также он позволяет рассматривать многоканальные временные ряды с разными длинами, в отличие от Block.
 		\seti
 	\end{enumerate}
 \end{frame}
-\begin{frame}{Выводы}
-	\begin{enumerate}
-		\conti
-		\item В случае нестационарных рядов (например, в которых присутствует тренд) оба метода показывают результаты хуже, чем Basic MSSA.\medskip
-		\item Применять Block и Sum Toeplitz MSSA рекомендуется к временным рядам, заранее выделив из них тренд.\medskip
-	\end{enumerate}
-\end{frame}
-\end{document}
+%\begin{frame}{Выводы}
+%	\begin{enumerate}
+%		\conti
+%		\item В случае нестационарных рядов (например, в которых присутствует тренд) оба метода показывают результаты хуже, чем Basic MSSA.\medskip
+%		\item Применять Block и Sum Toeplitz MSSA рекомендуется к временным рядам, заранее выделив из них тренд.\medskip
+%	\end{enumerate}
+%\end{frame}
+\end{document} 
